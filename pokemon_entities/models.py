@@ -21,10 +21,10 @@ class Pokemon(models.Model):
 
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='покемон')
-    lat = models.FloatField('широта')
-    lon = models.FloatField('долгота')
-    appeared_at = models.DateTimeField('появится', null=True)
-    disappeared_at = models.DateTimeField('исчезнет', null=True)
+    lat = models.FloatField('широта', blank=True, null=True)
+    lon = models.FloatField('долгота', blank=True, null=True)
+    appeared_at = models.DateTimeField('появится', blank=True, null=True)
+    disappeared_at = models.DateTimeField('исчезнет', blank=True, null=True)
     level = models.IntegerField('уровень', default=0)
     health = models.IntegerField('здоровье', default=0)
     strength = models.IntegerField('сила', default=0)
