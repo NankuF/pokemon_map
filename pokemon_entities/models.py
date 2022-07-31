@@ -12,7 +12,7 @@ class Pokemon(models.Model):
                                            on_delete=models.CASCADE,
                                            null=True,
                                            blank=True,
-                                           related_name='next_evolution',
+                                           related_name='next_evolutions',
                                            verbose_name='предыдущая эволюция')
 
     def __str__(self):
@@ -20,7 +20,10 @@ class Pokemon(models.Model):
 
 
 class PokemonEntity(models.Model):
-    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='покемон')
+    pokemon = models.ForeignKey(Pokemon,
+                                on_delete=models.CASCADE,
+                                verbose_name='покемон',
+                                related_name='pokemon_entities')
     lat = models.FloatField('широта', blank=True, null=True)
     lon = models.FloatField('долгота', blank=True, null=True)
     appeared_at = models.DateTimeField('появится', blank=True, null=True)
