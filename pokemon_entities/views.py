@@ -68,18 +68,18 @@ def show_pokemon(request, pokemon_id):
         )
 
     previous_evolution = requested_pokemon.previous_evolution if requested_pokemon.previous_evolution else ''
-    prev_evol = {}
+    prev_evolution_pokemon = {}
     if previous_evolution:
-        prev_evol.update({'pokemon_id': previous_evolution.id, 'title_ru': previous_evolution.title})
+        prev_evolution_pokemon.update({'pokemon_id': previous_evolution.id, 'title_ru': previous_evolution.title})
         if previous_evolution.image:
-            prev_evol['img_url'] = previous_evolution.image.url
+            prev_evolution_pokemon['img_url'] = previous_evolution.image.url
 
     next_evolution =requested_pokemon.next_evolutions.all().first() if requested_pokemon.next_evolutions.all() else ''
-    next_evol = {}
+    next_evolution_pokemon = {}
     if next_evolution:
-        next_evol.update({'pokemon_id': next_evolution.id, 'title_ru': next_evolution.title})
+        next_evolution_pokemon.update({'pokemon_id': next_evolution.id, 'title_ru': next_evolution.title})
         if next_evolution.image:
-            next_evol['img_url'] = next_evolution.image.url
+            next_evolution_pokemon['img_url'] = next_evolution.image.url
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(),
@@ -89,7 +89,7 @@ def show_pokemon(request, pokemon_id):
             'title_en': requested_pokemon.title_en,
             'title_jp': requested_pokemon.title_jp,
             'description': requested_pokemon.description,
-            'next_evolution': next_evol,
-            'previous_evolution': prev_evol,
+            'next_evolution': next_evolution_pokemon,
+            'previous_evolution': prev_evolution_pokemon,
         }
     })
