@@ -28,22 +28,21 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
 def show_all_pokemons(request):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
 
-    pokemons = Pokemon.objects.all()
+    pokemon_entities = PokemonEntity.objects.select_related('pokemon').filter(appeared_at__lte=localtime(),
+                                                                              disappeared_at__gt=localtime()
+                                                                              )
     pokemons_on_page = []
-    for pokemon in pokemons:
-        pokemon_image_url = request.build_absolute_uri(pokemon.image.url) if pokemon.image else ''
-        pokemons_on_page.append({'pokemon_id': pokemon.id, 'img_url': pokemon_image_url, 'title_ru': pokemon.title})
+    for p_entity in pokemon_entities:
+        pokemon_image_url = request.build_absolute_uri(p_entity.pokemon.image.url) if p_entity.pokemon.image else ''
+        pokemons_on_page.append({'pokemon_id': p_entity.pokemon.id,
+                                 'img_url': pokemon_image_url,
+                                 'title_ru': p_entity.pokemon.title})
 
-        pokemon_entities = PokemonEntity.objects.filter(pokemon=pokemon,
-                                                        disappeared_at__gt=localtime(),
-                                                        appeared_at__lte=localtime()
-                                                        )
-        for pokemon_entity in pokemon_entities:
-            add_pokemon(
-                folium_map, pokemon_entity.lat,
-                pokemon_entity.lon,
-                request.build_absolute_uri(pokemon_entity.pokemon.image.url)
-            )
+        add_pokemon(
+            folium_map, p_entity.lat,
+            p_entity.lon,
+            request.build_absolute_uri(p_entity.pokemon.image.url)
+        )
 
     return render(request, 'mainpage.html', context={
         'map': folium_map._repr_html_(),
@@ -52,7 +51,7 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    pokemon = Pokemon.objects.get(id=pokemon_id)
+    pokemon = Pokemon.objects.select_related('previous_evolution').get(id=pokemon_id)
 
     if pokemon.id == int(pokemon_id):
         requested_pokemon = pokemon
@@ -68,18 +67,20 @@ def show_pokemon(request, pokemon_id):
         )
 
     previous_evolution = requested_pokemon.previous_evolution if requested_pokemon.previous_evolution else ''
-    prev_evolution_pokemon = {}
+    next_evolution = requested_pokemon.next_evolutions.first() if requested_pokemon.next_evolutions.exists() else ''
+    previous_evolution_pokemon = next_evolution_pokemon = ''
     if previous_evolution:
-        prev_evolution_pokemon.update({'pokemon_id': previous_evolution.id, 'title_ru': previous_evolution.title})
-        if previous_evolution.image:
-            prev_evolution_pokemon['img_url'] = previous_evolution.image.url
-
-    next_evolution =requested_pokemon.next_evolutions.all().first() if requested_pokemon.next_evolutions.all() else ''
-    next_evolution_pokemon = {}
+        previous_evolution_pokemon = {
+            'pokemon_id': previous_evolution.id,
+            'title_ru': previous_evolution.title,
+            'img_url': previous_evolution.image.url if previous_evolution.image else ''
+        }
     if next_evolution:
-        next_evolution_pokemon.update({'pokemon_id': next_evolution.id, 'title_ru': next_evolution.title})
-        if next_evolution.image:
-            next_evolution_pokemon['img_url'] = next_evolution.image.url
+        next_evolution_pokemon = {
+            'pokemon_id': next_evolution.id,
+            'title_ru': next_evolution.title,
+            'img_url': next_evolution.image.url if next_evolution.image else ''
+        }
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(),
@@ -90,6 +91,6 @@ def show_pokemon(request, pokemon_id):
             'title_jp': requested_pokemon.title_jp,
             'description': requested_pokemon.description,
             'next_evolution': next_evolution_pokemon,
-            'previous_evolution': prev_evolution_pokemon,
+            'previous_evolution': previous_evolution_pokemon,
         }
     })
