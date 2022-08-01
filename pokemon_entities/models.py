@@ -24,8 +24,8 @@ class PokemonEntity(models.Model):
                                 on_delete=models.CASCADE,
                                 verbose_name='покемон',
                                 related_name='pokemon_entities')
-    lat = models.FloatField('широта', blank=True, null=True)
-    lon = models.FloatField('долгота', blank=True, null=True)
+    lat = models.FloatField('широта', null=True)
+    lon = models.FloatField('долгота', null=True)
     appeared_at = models.DateTimeField('появится', blank=True, null=True)
     disappeared_at = models.DateTimeField('исчезнет', blank=True, null=True)
     level = models.IntegerField('уровень', default=1)
