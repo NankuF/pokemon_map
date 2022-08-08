@@ -24,15 +24,15 @@ class PokemonEntity(models.Model):
                                 on_delete=models.CASCADE,
                                 verbose_name='покемон',
                                 related_name='pokemon_entities')
-    lat = models.FloatField('широта', null=True)
-    lon = models.FloatField('долгота', null=True)
+    lat = models.FloatField('широта')
+    lon = models.FloatField('долгота')
     appeared_at = models.DateTimeField('появится', blank=True, null=True)
     disappeared_at = models.DateTimeField('исчезнет', blank=True, null=True)
-    level = models.IntegerField('уровень', default=1)
-    health = models.IntegerField('здоровье', default=1)
-    strength = models.IntegerField('сила', default=1)
-    defence = models.IntegerField('защита', default=1)
-    stamina = models.IntegerField('выносливость', default=1)
+    level = models.IntegerField('уровень')
+    health = models.IntegerField('здоровье')
+    strength = models.IntegerField('сила')
+    defence = models.IntegerField('защита')
+    stamina = models.IntegerField('выносливость')
 
     def __str__(self):
         return f'{self.pokemon.title} {self.level}'
