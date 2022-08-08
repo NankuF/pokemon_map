@@ -33,7 +33,7 @@ def show_all_pokemons(request):
                                                                               )
     pokemons_on_page = []
     for p_entity in pokemon_entities:
-        pokemon_image_url = request.build_absolute_uri(p_entity.pokemon.image.url) if p_entity.pokemon.image else ''
+        pokemon_image_url = request.build_absolute_uri(p_entity.pokemon.image.url) if p_entity.pokemon.image else None
         pokemons_on_page.append({'pokemon_id': p_entity.pokemon.id,
                                  'img_url': pokemon_image_url,
                                  'title_ru': p_entity.pokemon.title})
@@ -67,20 +67,20 @@ def show_pokemon(request, pokemon_id):
             request.build_absolute_uri(requested_pokemon.image.url)
         )
 
-    previous_evolution = requested_pokemon.previous_evolution if requested_pokemon.previous_evolution else ''
-    next_evolution = requested_pokemon.next_evolutions.first() if requested_pokemon.next_evolutions.exists() else ''
-    previous_evolution_pokemon = next_evolution_pokemon = ''
+    previous_evolution = requested_pokemon.previous_evolution if requested_pokemon.previous_evolution else None
+    next_evolution = requested_pokemon.next_evolutions.first() if requested_pokemon.next_evolutions.exists() else None
+    previous_evolution_pokemon = next_evolution_pokemon = None
     if previous_evolution:
         previous_evolution_pokemon = {
             'pokemon_id': previous_evolution.id,
             'title_ru': previous_evolution.title,
-            'img_url': previous_evolution.image.url if previous_evolution.image else ''
+            'img_url': previous_evolution.image.url if previous_evolution.image else None
         }
     if next_evolution:
         next_evolution_pokemon = {
             'pokemon_id': next_evolution.id,
             'title_ru': next_evolution.title,
-            'img_url': next_evolution.image.url if next_evolution.image else ''
+            'img_url': next_evolution.image.url if next_evolution.image else None
         }
 
     return render(request, 'pokemon.html', context={
